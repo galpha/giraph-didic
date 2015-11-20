@@ -47,7 +47,6 @@ public class DiffusionComputation extends
       int clusterCount =
         getConf().getInt(NUMBER_OF_CLUSTERS, DEFAULT_NUMBER_OF_CLUSTERS);
       int startingCluster = (int) (vertex.getId().get() % clusterCount);
-      //in startingCluster -> 1.0 iff not 0.1
       ArrayList<Double> primaryLoad = new ArrayList<>();
       ArrayList<Double> secondaryLoad = new ArrayList<>();
       for (int i = 0; i < clusterCount; i++) {
@@ -64,9 +63,14 @@ public class DiffusionComputation extends
       vertex.getValue().setCurrentCluster(new IntWritable(startingCluster));
       sendMessageToAllEdges(vertex, vertex.getValue());
     } else {
+      for(DiffusionVertexValue m : messages){
+        System.out.println(m.getPrimaryLoad() + " asdf");
+        System.out.println(m.getSecondaryLoad());
+      }
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
       List<List<Double>> secondaryLoadMessages = new ArrayList<>();
       List<Integer> neighborCluster = new ArrayList<>();
+      int l = 0;
       for (DiffusionVertexValue message : messages) {
         List<Double> primary = Lists.newArrayList(message.getPrimaryLoad());
         primaryLoadMessages.add(primary);
@@ -111,7 +115,7 @@ public class DiffusionComputation extends
       Double ownLoad = primaryLoads.get(i);
       Double loadChange = 0.0;
       for (List<Double> message : primaryLoadMessages) {
-        loadChange += (ownLoad - message.get(i)) *
+        loadChange += (message.get(i) - ownLoad) *
           getConf().getDouble(EDGE_FLOW_SCALE, DEFAULT_EDGE_FLOW_SCALE);
       }
       ownLoad -= loadChange;
@@ -139,7 +143,8 @@ public class DiffusionComputation extends
         if (i == messageClusters.get(j)) {
           msgModifier = secondaryLoadFactor;
         }
-        loadChange += (ownLoad / ownModifier) - (msgLoad / msgModifier);
+        loadChange += ((msgLoad / msgModifier) - (ownLoad / ownModifier))*
+          getConf().getDouble(EDGE_FLOW_SCALE, DEFAULT_EDGE_FLOW_SCALE);
       }
       ownLoad -= loadChange;
       secondaryLoads.set(i, ownLoad);
