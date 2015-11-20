@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 public class DiffusionTextVertexInputFormat extends
   TextVertexInputFormat<LongWritable, DiffusionVertexValue, NullWritable> {
-
   private static final Pattern SEPARATOR = Pattern.compile("[\t ]");
 
   @Override
@@ -27,9 +26,7 @@ public class DiffusionTextVertexInputFormat extends
 
   public class VertexReader extends
     TextVertexReaderFromEachLineProcessed<String[]> {
-
     private int id;
-    private int clusterCount = DiffusionComputation.DEFAULT_NUMBER_OF_CLUSTERS;
 
     @Override
     protected String[] preprocessLine(Text line) throws IOException {
@@ -44,16 +41,16 @@ public class DiffusionTextVertexInputFormat extends
     }
 
     @Override
-    protected DiffusionVertexValue getValue(String[] tokens) throws IOException {
-      int startingCluster = id % clusterCount;
-      return new DiffusionVertexValue(clusterCount, startingCluster);
+    protected DiffusionVertexValue getValue(String[] tokens) throws
+      IOException {
+      return new DiffusionVertexValue();
     }
 
     @Override
     protected Iterable<Edge<LongWritable, NullWritable>> getEdges(
       String[] tokens) throws IOException {
       List<Edge<LongWritable, NullWritable>> edges = Lists.newArrayList();
-      for (int n = 2; n < tokens.length; n++) {
+      for (int n = 1; n < tokens.length; n++) {
         edges
           .add(EdgeFactory.create(new LongWritable(Long.parseLong(tokens[n]))));
       }

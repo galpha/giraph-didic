@@ -1,5 +1,5 @@
 package diffusionclustering;
-import org.apache.giraph.edge.Edge;
+
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.io.formats.TextVertexOutputFormat;
 import org.apache.hadoop.io.LongWritable;
@@ -11,7 +11,6 @@ import java.io.IOException;
 
 public class DiffusionTextVertexOutputFormat extends
   TextVertexOutputFormat<LongWritable, DiffusionVertexValue, NullWritable> {
-
   private static final String VALUE_TOKEN_SEPARATOR = " ";
 
   @Override
@@ -22,7 +21,6 @@ public class DiffusionTextVertexOutputFormat extends
 
   private class LabelPropagationTextVertexLineWriter extends
     TextVertexWriterToEachLine {
- 
     @Override
     protected Text convertVertexToLine(
       Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) throws
@@ -33,11 +31,13 @@ public class DiffusionTextVertexOutputFormat extends
       // vertex value
       sb.append(vertex.getValue().getCurrentCluster());
       sb.append(VALUE_TOKEN_SEPARATOR);
-      // edges
-      for (Edge<LongWritable, NullWritable> e : vertex.getEdges()) {
-        sb.append(e.getTargetVertexId());
+      Iterable<Double> primaryLoad = vertex.getValue().getPrimaryLoad();
+      for(Double load : primaryLoad){
+        sb.append(load);
         sb.append(VALUE_TOKEN_SEPARATOR);
       }
+
+
       return new Text(sb.toString());
     }
   }
