@@ -28,7 +28,7 @@ public class DiffusionVertexValue implements Writable {
     this.primaryLoad = Lists.newArrayList(primaryLoad);
   }
 
-  public Iterable<Double> getPrimaryLoad() {
+  public List<Double> getPrimaryLoad() {
     return primaryLoad;
   }
 
@@ -36,7 +36,7 @@ public class DiffusionVertexValue implements Writable {
     this.secondaryLoad = Lists.newArrayList(secondaryLoad);
   }
 
-  public Iterable<Double> getSecondaryLoad() {
+  public List<Double> getSecondaryLoad() {
     return secondaryLoad;
   }
 
@@ -46,6 +46,16 @@ public class DiffusionVertexValue implements Writable {
 
   public IntWritable getCurrentCluster() {
     return new IntWritable(this.currentCluster);
+  }
+
+  public void print(){
+    System.out.println("###");
+    System.out.println("PrimaryLoad:");
+    System.out.println(primaryLoad.toString());
+    System.out.println("SecondaryLoad:");
+    System.out.println(secondaryLoad.toString());
+    System.out.println("currentCluster:");
+    System.out.println(currentCluster);
   }
 
   @Override
