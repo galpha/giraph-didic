@@ -57,6 +57,7 @@ public class DiffusionComputation extends
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) {
     int startingCluster = (int) (vertex.getId().get() % k);
     vertex.getValue().setCurrentCluster(new IntWritable(startingCluster));
+    System.out.println("Set starting Cluster: " + startingCluster);
   }
 
   /**
@@ -79,6 +80,7 @@ public class DiffusionComputation extends
     }
     vertex.getValue().setPrimaryLoad(primaryLoad);
     vertex.getValue().setSecondaryLoad(secondaryLoad);
+    System.out.println("Set starting loads");
   }
 
   private void calculateNewSecondaryLoad(
@@ -135,34 +137,41 @@ public class DiffusionComputation extends
     vertex.getValue().setCurrentCluster(new IntWritable(cluster));
   }
 
+  private void printMessages(Iterable<DiffusionVertexValue> messages){
+    System.out.println("print messages");
+    for (DiffusionVertexValue neighborValue :  messages){
+      neighborValue.print();
+    }
+  }
+
   @Override
   public void compute(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
     Iterable<DiffusionVertexValue> messages) throws IOException {
+    System.out.println("VertexID: " + vertex.getId());
+    System.out.println("Superstep: " + getSuperstep());
     if (getSuperstep() == 0) {
       setStartCluster(vertex);
       setStartLoad(vertex);
+      vertex.getValue().print();
+      System.out.println("edge counter: " + vertex.getNumEdges());
       sendMessageToAllEdges(vertex, vertex.getValue());
     } else {
+      printMessages(messages);
+      List<Integer> neighborClusters = new ArrayList<>();
+
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
       List<List<Double>> secondaryLoadMessages = new ArrayList<>();
-      List<Integer> neighborClusters = new ArrayList<>();
+
       for (DiffusionVertexValue neighborValue : messages) {
+        neighborClusters.add(neighborValue.getCurrentCluster().get());
         primaryLoadMessages.add(neighborValue.getPrimaryLoad());
         secondaryLoadMessages.add(neighborValue.getSecondaryLoad());
-        neighborClusters.add(neighborValue.getCurrentCluster().get());
       }
+
       calculateNewSecondaryLoad(vertex, secondaryLoadMessages,
         neighborClusters);
       calculateNewPrimaryLoad(vertex, primaryLoadMessages);
-//      List<Double> newSecondaryLoad = calculateNewSecondaryLoads(
-//        Lists.newArrayList(vertex.getValue().getSecondaryLoad()),
-//        vertex.getValue().getCurrentCluster().get(), secondaryLoadMessages,
-//        neighborClusters);
-//      vertex.getValue().setSecondaryLoad(newSecondaryLoad);
-//      vertex.getValue().setPrimaryLoad(calculateNewPrimaryLoad(
-//        Lists.newArrayList(vertex.getValue().getPrimaryLoad()),
-//        primaryLoadMessages, newSecondaryLoad));
       if (getSuperstep() % 10 == 0) {
         determineNewCluster(vertex);
       }
@@ -170,43 +179,4 @@ public class DiffusionComputation extends
     }
     vertex.voteToHalt();
   }
-//  public List<Double> calculateNewPrimaryLoad(List<Double> primaryLoads,
-//    List<List<Double>> primaryLoadMessages, List<Double> secondaryLoads) {
-//    for (int i = 0; i < primaryLoads.size(); i++) {
-//      Double ownLoad = primaryLoads.get(i);
-//      Double loadChange = 0.0;
-//      for (List<Double> message : primaryLoadMessages) {
-//        loadChange += (message.get(i) - ownLoad) * edgeFlowScale;
-//      }
-//      ownLoad -= loadChange;
-//      ownLoad += secondaryLoads.get(i);
-//      primaryLoads.set(i, ownLoad);
-//    }
-//    return primaryLoads;
-//  }
-//  public List<Double> calculateNewSecondaryLoads(List<Double> secondaryLoads,
-//    int currentCluster, List<List<Double>> secondaryLoadMessages,
-//    List<Integer> messageClusters) {
-//
-//    for (int i = 0; i < secondaryLoads.size(); i++) {
-//      Double ownLoad = secondaryLoads.get(i);
-//      Double loadChange = 0.0;
-//      for (int j = 0; j < secondaryLoadMessages.size(); j++) {
-//        Double msgLoad = secondaryLoadMessages.get(j).get(i);
-//        Double ownModifier = 1.0;
-//        Double msgModifier = 1.0;
-//        if (i == currentCluster) {
-//          ownModifier = secondaryLoadFactor;
-//        }
-//        if (i == messageClusters.get(j)) {
-//          msgModifier = secondaryLoadFactor;
-//        }
-//        loadChange +=
-//          ((msgLoad / msgModifier) - (ownLoad / ownModifier)) * edgeFlowScale;
-//      }
-//      ownLoad -= loadChange;
-//      secondaryLoads.set(i, ownLoad);
-//    }
-//    return secondaryLoads;
-//  }
 }

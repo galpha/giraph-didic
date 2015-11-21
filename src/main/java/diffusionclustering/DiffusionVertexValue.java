@@ -50,12 +50,13 @@ public class DiffusionVertexValue implements Writable {
 
   public void print(){
     System.out.println("###");
+    System.out.println("currentCluster:");
+    System.out.println(currentCluster);
     System.out.println("PrimaryLoad:");
     System.out.println(primaryLoad.toString());
     System.out.println("SecondaryLoad:");
     System.out.println(secondaryLoad.toString());
-    System.out.println("currentCluster:");
-    System.out.println(currentCluster);
+    System.out.println("Vector size: " + primaryLoad.size());
   }
 
   @Override
