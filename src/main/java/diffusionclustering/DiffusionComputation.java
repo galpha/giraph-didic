@@ -57,7 +57,6 @@ public class DiffusionComputation extends
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) {
     int startingCluster = (int) (vertex.getId().get() % k);
     vertex.getValue().setCurrentCluster(new IntWritable(startingCluster));
-    System.out.println("Set starting Cluster: " + startingCluster);
   }
 
   /**
@@ -80,7 +79,6 @@ public class DiffusionComputation extends
     }
     vertex.getValue().setPrimaryLoad(primaryLoad);
     vertex.getValue().setSecondaryLoad(secondaryLoad);
-    System.out.println("Set starting loads");
   }
 
   private void calculateNewSecondaryLoad(
@@ -138,7 +136,6 @@ public class DiffusionComputation extends
   }
 
   private void printMessages(Iterable<DiffusionVertexValue> messages){
-    System.out.println("print messages");
     for (DiffusionVertexValue neighborValue :  messages){
       neighborValue.print();
     }
@@ -148,16 +145,11 @@ public class DiffusionComputation extends
   public void compute(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
     Iterable<DiffusionVertexValue> messages) throws IOException {
-    System.out.println("VertexID: " + vertex.getId());
-    System.out.println("Superstep: " + getSuperstep());
     if (getSuperstep() == 0) {
       setStartCluster(vertex);
       setStartLoad(vertex);
-      vertex.getValue().print();
-      System.out.println("edge counter: " + vertex.getNumEdges());
       sendMessageToAllEdges(vertex, vertex.getValue());
     } else {
-      printMessages(messages);
       List<Integer> neighborClusters = new ArrayList<>();
 
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
