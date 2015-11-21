@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DiffusionComputation extends
   BasicComputation<LongWritable, DiffusionVertexValue, NullWritable,
-    DiffusionVertexValue> {
+    DiffusionMessage> {
   public static final String SECONDARY_LOAD_FACTOR =
     "diffusion.secondaryloadfactor";
   public static final double DEFAULT_SECONDARY_LOAD_FACTOR = 10;
@@ -135,39 +135,41 @@ public class DiffusionComputation extends
     vertex.getValue().setCurrentCluster(new IntWritable(cluster));
   }
 
-  private void printMessages(Iterable<DiffusionVertexValue> messages){
-    for (DiffusionVertexValue neighborValue :  messages){
-      neighborValue.print();
-    }
+  private DiffusionMessage prepareMessage(
+    Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) {
+    DiffusionMessage msg = new DiffusionMessage();
+    msg.setCurrentCluster(vertex.getValue().getCurrentCluster().get());
+    msg.setPrimaryLoad(vertex.getValue().getPrimaryLoad());
+    msg.setSecondaryLoad(vertex.getValue().getSecondaryLoad());
+    return msg;
   }
 
   @Override
   public void compute(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
-    Iterable<DiffusionVertexValue> messages) throws IOException {
+    Iterable<DiffusionMessage> messages) throws IOException {
     if (getSuperstep() == 0) {
       setStartCluster(vertex);
       setStartLoad(vertex);
-      sendMessageToAllEdges(vertex, vertex.getValue());
+      DiffusionMessage msg = prepareMessage(vertex);
+      sendMessageToAllEdges(vertex, msg);
     } else {
       List<Integer> neighborClusters = new ArrayList<>();
-
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
       List<List<Double>> secondaryLoadMessages = new ArrayList<>();
-
-      for (DiffusionVertexValue neighborValue : messages) {
-        neighborClusters.add(neighborValue.getCurrentCluster().get());
+      for (DiffusionMessage neighborValue : messages) {
+        neighborClusters.add(neighborValue.getCurrentCluster());
         primaryLoadMessages.add(neighborValue.getPrimaryLoad());
         secondaryLoadMessages.add(neighborValue.getSecondaryLoad());
       }
-
       calculateNewSecondaryLoad(vertex, secondaryLoadMessages,
         neighborClusters);
       calculateNewPrimaryLoad(vertex, primaryLoadMessages);
       if (getSuperstep() % 10 == 0) {
         determineNewCluster(vertex);
       }
-      sendMessageToAllEdges(vertex, vertex.getValue());
+      DiffusionMessage msg = prepareMessage(vertex);
+      sendMessageToAllEdges(vertex, msg);
     }
     vertex.voteToHalt();
   }
