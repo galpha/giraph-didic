@@ -15,18 +15,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Niklas Teichmann (teichmann@informatik.uni-leipzig.de)
+ * @author Stefan Faulhaber (faulhaber@informatik.uni-leipzig.de)
+ * @author Kevin Gomez (gomez@studserv.uni-leipzig.de)
+ */
 public class DiffusionComputation extends
   BasicComputation<LongWritable, DiffusionVertexValue, NullWritable,
-    DiffusionMessage> {
+    DiffusionVertexValue> {
+  /**
+   * Config String of the secondary load factor
+   */
   public static final String SECONDARY_LOAD_FACTOR =
     "diffusion.secondaryloadfactor";
-  public static final double DEFAULT_SECONDARY_LOAD_FACTOR = 10;
+  /**
+   * Config String of the edge flow scale
+   */
   public static final String EDGE_FLOW_SCALE = "diffusion.edgeflowscale";
-  public static final double DEFAULT_EDGE_FLOW_SCALE = 0.5;
+  /**
+   * Config String of the number of clusters to create
+   */
   public static final String NUMBER_OF_CLUSTERS = "diffusion.cluster.num";
+  /**
+   * Config String of total number of iterations
+   */
+  public static final String NUMBER_OF_ITERATIONS = "diffusion.iterations";
+  /**
+   * Default secondary load factor
+   */
+  public static final double DEFAULT_SECONDARY_LOAD_FACTOR = 10;
+  /**
+   * Default edge flow scale
+   */
+  public static final double DEFAULT_EDGE_FLOW_SCALE = 0.5;
+  /**
+   * Default number of clusters
+   */
   public static final int DEFAULT_NUMBER_OF_CLUSTERS = 2;
+  /**
+   * Default number of iterations
+   */
+  public static final int DEFAULT_NUMBER_OF_ITERATIONS = 50;
+  /**
+   * Total number of clusters
+   */
   private int k;
+  /**
+   * edge flow scale
+   */
   private double edgeFlowScale;
+  /**
+   * secondary load factor
+   */
   private double secondaryLoadFactor;
 
   /**
@@ -81,6 +121,13 @@ public class DiffusionComputation extends
     vertex.getValue().setSecondaryLoad(secondaryLoad);
   }
 
+  /**
+   * Method to calculate the new secondary load vector
+   *
+   * @param vertex           actual vertex
+   * @param secondaryLoads   secondary loads of all neighbor vertices
+   * @param neighborClusters clusters of all neighbor vertices
+   */
   private void calculateNewSecondaryLoad(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
     List<List<Double>> secondaryLoads, List<Integer> neighborClusters) {
@@ -106,6 +153,12 @@ public class DiffusionComputation extends
     }
   }
 
+  /**
+   * Method to calculate the new primary load vector
+   *
+   * @param vertex       actual vertex
+   * @param primaryLoads primary loads of all neighbor vertices
+   */
   private void calculateNewPrimaryLoad(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
     List<List<Double>> primaryLoads) {
@@ -118,10 +171,16 @@ public class DiffusionComputation extends
       vertexLoad += newLoad;
       vertexLoad += vertex.getValue().getSecondaryLoad().get(i);
       vertex.getValue().getPrimaryLoad().set(i, vertexLoad);
+      System.out.println(vertex.getValue().getPrimaryLoad().size());
     }
   }
 
-  public void determineNewCluster(
+  /**
+   * Method to determine new cluster (highest color weight)
+   *
+   * @param vertex actual vertex
+   */
+  private void determineNewCluster(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) {
     int cluster = 0;
     Double maxLoad = 0.0;
@@ -135,30 +194,23 @@ public class DiffusionComputation extends
     vertex.getValue().setCurrentCluster(new IntWritable(cluster));
   }
 
-  private DiffusionMessage prepareMessage(
-    Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex) {
-    DiffusionMessage msg = new DiffusionMessage();
-    msg.setCurrentCluster(vertex.getValue().getCurrentCluster().get());
-    msg.setPrimaryLoad(vertex.getValue().getPrimaryLoad());
-    msg.setSecondaryLoad(vertex.getValue().getSecondaryLoad());
-    return msg;
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void compute(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
-    Iterable<DiffusionMessage> messages) throws IOException {
+    Iterable<DiffusionVertexValue> messages) throws IOException {
     if (getSuperstep() == 0) {
       setStartCluster(vertex);
       setStartLoad(vertex);
-      DiffusionMessage msg = prepareMessage(vertex);
-      sendMessageToAllEdges(vertex, msg);
+      sendMessageToAllEdges(vertex, vertex.getValue());
     } else {
       List<Integer> neighborClusters = new ArrayList<>();
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
       List<List<Double>> secondaryLoadMessages = new ArrayList<>();
-      for (DiffusionMessage neighborValue : messages) {
-        neighborClusters.add(neighborValue.getCurrentCluster());
+      for (DiffusionVertexValue neighborValue : messages) {
+        neighborClusters.add(neighborValue.getCurrentCluster().get());
         primaryLoadMessages.add(neighborValue.getPrimaryLoad());
         secondaryLoadMessages.add(neighborValue.getSecondaryLoad());
       }
@@ -168,8 +220,7 @@ public class DiffusionComputation extends
       if (getSuperstep() % 10 == 0) {
         determineNewCluster(vertex);
       }
-      DiffusionMessage msg = prepareMessage(vertex);
-      sendMessageToAllEdges(vertex, msg);
+      sendMessageToAllEdges(vertex, vertex.getValue());
     }
     vertex.voteToHalt();
   }
