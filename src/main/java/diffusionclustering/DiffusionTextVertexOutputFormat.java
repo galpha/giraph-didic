@@ -17,10 +17,10 @@ public class DiffusionTextVertexOutputFormat extends
   @Override
   public TextVertexWriter createVertexWriter(TaskAttemptContext context) throws
     IOException, InterruptedException {
-    return new LabelPropagationTextVertexLineWriter();
+    return new DiffusionTextVertexLineWriter();
   }
 
-  private class LabelPropagationTextVertexLineWriter extends
+  private class DiffusionTextVertexLineWriter extends
     TextVertexWriterToEachLine {
     @Override
     protected Text convertVertexToLine(
@@ -37,6 +37,8 @@ public class DiffusionTextVertexOutputFormat extends
         sb.append(edge.getTargetVertexId());
         sb.append(VALUE_TOKEN_SEPARATOR);
       }
+
+
       return new Text(sb.toString());
     }
   }

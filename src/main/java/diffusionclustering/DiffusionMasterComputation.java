@@ -7,8 +7,9 @@ import org.apache.giraph.master.DefaultMasterCompute;
  * <p/>
  * Halts the computation after a given number if iterations.
  *
+ * @author Niklas Teichmann (teichmann@informatik.uni-leipzig.de)
+ * @author Stefan Faulhaber (faulhaber@informatik.uni-leipzig.de)
  * @author Kevin Gomez (gomez@studserv.uni-leipzig.de)
- * @author Martin Junghanns (junghanns@informatik.uni-leipzig.de)
  */
 public class DiffusionMasterComputation extends DefaultMasterCompute {
   /**
@@ -16,7 +17,8 @@ public class DiffusionMasterComputation extends DefaultMasterCompute {
    */
   @Override
   public void compute() {
-    int iterations = 50;
+    int iterations = getConf().getInt(DiffusionComputation.NUMBER_OF_ITERATIONS,
+      DiffusionComputation.DEFAULT_NUMBER_OF_ITERATIONS);
     if (getSuperstep() == iterations) {
       haltComputation();
     }

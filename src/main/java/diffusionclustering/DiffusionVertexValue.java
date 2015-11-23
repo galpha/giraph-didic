@@ -15,9 +15,6 @@ public class DiffusionVertexValue implements Writable {
   private List<Double> secondaryLoad;
   private int currentCluster;
 
-  /**
-   * Default Constructor
-   */
   public DiffusionVertexValue() {
     primaryLoad = new ArrayList<>();
     secondaryLoad = new ArrayList<>();
@@ -48,8 +45,12 @@ public class DiffusionVertexValue implements Writable {
     return new IntWritable(this.currentCluster);
   }
 
-  public void print(){
-    System.out.println("###");
+  public void initList(int size) {
+    this.primaryLoad = Lists.newArrayListWithCapacity(size);
+    this.secondaryLoad = Lists.newArrayListWithCapacity(size);
+  }
+
+  public void print() {
     System.out.println("currentCluster:");
     System.out.println(currentCluster);
     System.out.println("PrimaryLoad:");
@@ -61,25 +62,32 @@ public class DiffusionVertexValue implements Writable {
 
   @Override
   public void write(DataOutput dataOutput) throws IOException {
-    dataOutput.writeInt(primaryLoad.size());
-    for (Double load : primaryLoad) {
-      dataOutput.writeDouble(load);
+    dataOutput.writeInt(this.currentCluster);
+    if (primaryLoad == null || primaryLoad.isEmpty()) {
+      dataOutput.writeInt(0);
+    } else {
+      dataOutput.writeInt(primaryLoad.size());
+      for (Double load : primaryLoad) {
+        dataOutput.writeDouble(load);
+      }
+      for (Double load : this.secondaryLoad) {
+        dataOutput.writeDouble(load);
+      }
     }
-    for (Double load : secondaryLoad) {
-      dataOutput.writeDouble(load);
-    }
-    dataOutput.writeInt(currentCluster);
   }
 
   @Override
   public void readFields(DataInput dataInput) throws IOException {
-    int loadSize = dataInput.readInt();
+    this.currentCluster = dataInput.readInt();
+    final int loadSize = dataInput.readInt();
+    if (loadSize > 0) {
+      initList(loadSize);
+    }
     for (int i = 0; i < loadSize; i++) {
       primaryLoad.add(dataInput.readDouble());
     }
     for (int i = 0; i < loadSize; i++) {
       secondaryLoad.add(dataInput.readDouble());
     }
-    currentCluster = dataInput.readInt();
   }
 }
