@@ -21,7 +21,21 @@ public class DiffusionComputationTest {
   @Test
   public void testDirectedGraphFrom1To0() throws Exception {
     String[] graph = GiraphTestHelper.getDirectedGraphFrom1To0();
-    validateResults(computeResults(graph));
+    Map<Integer, List<Double>> results = computeResults(graph);
+    printResults(results);
+    validateResults(results);
+    printResults(results);
+  }
+
+  private void printResults(Map<Integer, List<Double>> vertexIDwithValue) {
+    for(Integer vertexID : vertexIDwithValue.keySet()){
+      StringBuilder sb = new StringBuilder();
+      for(Double value : vertexIDwithValue.get(vertexID)){
+        sb.append(" ");
+        sb.append(value);
+      }
+      System.out.println(vertexID + sb.toString());
+    }
   }
 
   private void validateResults(Map<Integer, List<Double>> vertexIDwithValue) {
@@ -39,7 +53,8 @@ public class DiffusionComputationTest {
     conf.setComputationClass(DiffusionComputation.class);
     conf.setMasterComputeClass(DiffusionMasterComputation.class);
     conf.setVertexInputFormatClass(DiffusionTextVertexInputFormat.class);
-    conf.setVertexOutputFormatClass(DiffusionTextVertexOutputFormat.class);
+    conf.setVertexOutputFormatClass
+      (DiffusionTextVertexWithPrimaryLoadsOutputFormat.class);
     return conf;
   }
 
@@ -58,9 +73,10 @@ public class DiffusionComputationTest {
       lineTokens = LINE_TOKEN_SEPARATOR.split(line);
       vertexID = Integer.parseInt(lineTokens[0]);
       List<Double> values = Lists.newArrayList();
-      values.add(Double.valueOf(lineTokens[1]));
-      values.add(Double.valueOf(lineTokens[2]));
-      values.add(Double.valueOf(lineTokens[3]));
+      for(int i=1;i<lineTokens.length;i++){
+
+        values.add(Double.valueOf(lineTokens[i]));
+      }
       parsedResults.put(vertexID, values);
     }
     return parsedResults;
