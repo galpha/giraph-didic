@@ -32,7 +32,8 @@ public class DiffusionComputationTest {
     validateResultsFrom0To1(results);
   }
 
-  private void validateResultsFrom1To0(Map<Integer, List<Double>> vertexIDwithValue) {
+  private void validateResultsFrom1To0(
+    Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
     assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
     assertEquals(1.45, vertexIDwithValue.get(0).get(1), 0);
@@ -42,7 +43,8 @@ public class DiffusionComputationTest {
     assertEquals(1.0, vertexIDwithValue.get(1).get(2), 0);
   }
 
-  private void validateResultsFrom0To1(Map<Integer, List<Double>> vertexIDwithValue) {
+  private void validateResultsFrom0To1(
+    Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
     assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
     assertEquals(1.0, vertexIDwithValue.get(0).get(1), 0);
@@ -57,8 +59,7 @@ public class DiffusionComputationTest {
     conf.setComputationClass(DiffusionComputation.class);
     conf.setMasterComputeClass(DiffusionMasterComputation.class);
     conf.setVertexInputFormatClass(DiffusionTextVertexInputFormat.class);
-    conf.setVertexOutputFormatClass
-      (DiffusionTextVertexOutputFormat.class);
+    conf.setVertexOutputFormatClass(DiffusionTextVertexOutputFormat.class);
     conf.setBoolean(DiffusionTextVertexOutputFormat.TEST_OUTPUT, true);
     return conf;
   }
@@ -67,9 +68,6 @@ public class DiffusionComputationTest {
     Exception {
     GiraphConfiguration conf = getConfiguration();
     Iterable<String> results = InternalVertexRunner.run(conf, graph);
-    for (String result: results){
-      System.out.println(result);
-    }
     return parseResults(results);
   }
 
@@ -81,8 +79,7 @@ public class DiffusionComputationTest {
       lineTokens = LINE_TOKEN_SEPARATOR.split(line);
       vertexID = Integer.parseInt(lineTokens[0]);
       List<Double> values = Lists.newArrayList();
-      for(int i=1;i<lineTokens.length;i++){
-
+      for (int i = 1; i < lineTokens.length; i++) {
         values.add(Double.valueOf(lineTokens[i]));
       }
       parsedResults.put(vertexID, values);

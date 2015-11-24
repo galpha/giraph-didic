@@ -50,16 +50,6 @@ public class DiffusionVertexValue implements Writable {
     this.secondaryLoad = Lists.newArrayListWithCapacity(size);
   }
 
-  public void print() {
-    System.out.println("currentCluster:");
-    System.out.println(currentCluster);
-    System.out.println("PrimaryLoad:");
-    System.out.println(primaryLoad.toString());
-    System.out.println("SecondaryLoad:");
-    System.out.println(secondaryLoad.toString());
-    System.out.println("Vector size: " + primaryLoad.size());
-  }
-
   @Override
   public void write(DataOutput dataOutput) throws IOException {
     dataOutput.writeInt(this.currentCluster);

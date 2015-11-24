@@ -171,7 +171,6 @@ public class DiffusionComputation extends
       vertexLoad += newLoad;
       vertexLoad += vertex.getValue().getSecondaryLoad().get(i);
       vertex.getValue().getPrimaryLoad().set(i, vertexLoad);
-      System.out.println(vertex.getValue().getPrimaryLoad().size());
     }
   }
 
