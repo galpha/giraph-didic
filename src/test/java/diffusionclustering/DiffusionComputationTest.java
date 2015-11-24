@@ -22,11 +22,17 @@ public class DiffusionComputationTest {
   public void testDirectedGraphFrom1To0() throws Exception {
     String[] graph = GiraphTestHelper.getDirectedGraphFrom1To0();
     Map<Integer, List<Double>> results = computeResults(graph);
-    validateResults(results);
+    validateResultsFrom1To0(results);
   }
 
+  @Test
+  public void testDirectedGraphFrom0To1() throws Exception {
+    String[] graph = GiraphTestHelper.getDirectedGraphFrom0To1();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    validateResultsFrom0To1(results);
+  }
 
-  private void validateResults(Map<Integer, List<Double>> vertexIDwithValue) {
+  private void validateResultsFrom1To0(Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
     assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
     assertEquals(1.45, vertexIDwithValue.get(0).get(1), 0);
@@ -34,6 +40,16 @@ public class DiffusionComputationTest {
     assertEquals(1.0, vertexIDwithValue.get(1).get(0), 0);
     assertEquals(0.0, vertexIDwithValue.get(1).get(1), 0);
     assertEquals(1.0, vertexIDwithValue.get(1).get(2), 0);
+  }
+
+  private void validateResultsFrom0To1(Map<Integer, List<Double>> vertexIDwithValue) {
+    assertEquals(2, vertexIDwithValue.size());
+    assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
+    assertEquals(1.0, vertexIDwithValue.get(0).get(1), 0);
+    assertEquals(0.0, vertexIDwithValue.get(0).get(2), 0);
+    assertEquals(1.0, vertexIDwithValue.get(1).get(0), 0);
+    assertEquals(0.55, vertexIDwithValue.get(1).get(1), 0);
+    assertEquals(1.45, vertexIDwithValue.get(1).get(2), 0);
   }
 
   private GiraphConfiguration getConfiguration() {
