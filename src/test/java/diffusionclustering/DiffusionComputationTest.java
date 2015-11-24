@@ -22,21 +22,9 @@ public class DiffusionComputationTest {
   public void testDirectedGraphFrom1To0() throws Exception {
     String[] graph = GiraphTestHelper.getDirectedGraphFrom1To0();
     Map<Integer, List<Double>> results = computeResults(graph);
-    printResults(results);
     validateResults(results);
-    printResults(results);
   }
 
-  private void printResults(Map<Integer, List<Double>> vertexIDwithValue) {
-    for(Integer vertexID : vertexIDwithValue.keySet()){
-      StringBuilder sb = new StringBuilder();
-      for(Double value : vertexIDwithValue.get(vertexID)){
-        sb.append(" ");
-        sb.append(value);
-      }
-      System.out.println(vertexID + sb.toString());
-    }
-  }
 
   private void validateResults(Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
@@ -54,7 +42,8 @@ public class DiffusionComputationTest {
     conf.setMasterComputeClass(DiffusionMasterComputation.class);
     conf.setVertexInputFormatClass(DiffusionTextVertexInputFormat.class);
     conf.setVertexOutputFormatClass
-      (DiffusionTextVertexWithPrimaryLoadsOutputFormat.class);
+      (DiffusionTextVertexOutputFormat.class);
+    conf.setBoolean(DiffusionTextVertexOutputFormat.TEST_OUTPUT, true);
     return conf;
   }
 
@@ -62,6 +51,9 @@ public class DiffusionComputationTest {
     Exception {
     GiraphConfiguration conf = getConfiguration();
     Iterable<String> results = InternalVertexRunner.run(conf, graph);
+    for (String result: results){
+      System.out.println(result);
+    }
     return parseResults(results);
   }
 

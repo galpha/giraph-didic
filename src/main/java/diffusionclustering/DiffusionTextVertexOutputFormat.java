@@ -12,11 +12,14 @@ import java.io.IOException;
 
 public class DiffusionTextVertexOutputFormat extends
   TextVertexOutputFormat<LongWritable, DiffusionVertexValue, NullWritable> {
+  public static final String TEST_OUTPUT = "diffusion.test_output";
   private static final String VALUE_TOKEN_SEPARATOR = " ";
+  private boolean testOutput;
 
   @Override
   public TextVertexWriter createVertexWriter(TaskAttemptContext context) throws
     IOException, InterruptedException {
+    this.testOutput = getConf().getBoolean(TEST_OUTPUT, false);
     return new DiffusionTextVertexLineWriter();
   }
 
@@ -32,13 +35,19 @@ public class DiffusionTextVertexOutputFormat extends
       // vertex value
       sb.append(vertex.getValue().getCurrentCluster());
       sb.append(VALUE_TOKEN_SEPARATOR);
-      Iterable<Edge<LongWritable, NullWritable>> edges  = vertex.getEdges();
-      for(Edge<LongWritable, NullWritable> edge : edges){
-        sb.append(edge.getTargetVertexId());
-        sb.append(VALUE_TOKEN_SEPARATOR);
+      if (testOutput) {
+        Iterable<Double> primaryLoad = vertex.getValue().getPrimaryLoad();
+        for (Double load : primaryLoad) {
+          sb.append(load);
+          sb.append(VALUE_TOKEN_SEPARATOR);
+        }
+      } else {
+        Iterable<Edge<LongWritable, NullWritable>> edges = vertex.getEdges();
+        for (Edge<LongWritable, NullWritable> edge : edges) {
+          sb.append(edge.getTargetVertexId());
+          sb.append(VALUE_TOKEN_SEPARATOR);
+        }
       }
-
-
       return new Text(sb.toString());
     }
   }
