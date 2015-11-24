@@ -147,9 +147,9 @@ public class DiffusionComputation extends
         newLoad +=
           ((neighborLoad / neighborModifier) - (vertexLoad / vertexModifier)) *
             edgeFlowScale;
-        vertexLoad += newLoad;
-        vertex.getValue().getSecondaryLoad().set(i, vertexLoad);
       }
+      vertexLoad += newLoad;
+      vertex.getValue().getSecondaryLoad().set(i, vertexLoad);
     }
   }
 
