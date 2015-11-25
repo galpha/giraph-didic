@@ -32,6 +32,13 @@ public class DiffusionComputationTest {
     validateResultsFrom0To1(results);
   }
 
+  @Test
+  public void testDirected4NodeGraph() throws Exception {
+    String[] graph = GiraphTestHelper.getDirected4NodeGraph();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    validateResults4Nodes(results);
+  }
+
   private void validateResultsFrom1To0(Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
     assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
@@ -50,6 +57,23 @@ public class DiffusionComputationTest {
     assertEquals(1.0, vertexIDwithValue.get(1).get(0), 0);
     assertEquals(0.55, vertexIDwithValue.get(1).get(1), 0);
     assertEquals(1.45, vertexIDwithValue.get(1).get(2), 0);
+  }
+
+  // TODO: validate values manually
+  private void validateResults4Nodes(Map<Integer, List<Double>> vertexIDwithValue) {
+    assertEquals(4, vertexIDwithValue.size());
+    assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
+    assertEquals(1.45, vertexIDwithValue.get(0).get(1), 0);
+    assertEquals(0.55, vertexIDwithValue.get(0).get(2), 0);
+    assertEquals(1.0, vertexIDwithValue.get(1).get(0), 0);
+    assertEquals(2.3, vertexIDwithValue.get(1).get(1), 0.1);
+    assertEquals(1.5, vertexIDwithValue.get(1).get(2), 0.1);
+    assertEquals(0.0, vertexIDwithValue.get(2).get(0), 0);
+    assertEquals(2.7, vertexIDwithValue.get(2).get(1), 0.1);
+    assertEquals(0.3, vertexIDwithValue.get(2).get(2), 0.1);
+    assertEquals(1.0, vertexIDwithValue.get(3).get(0), 0);
+    assertEquals(0.0, vertexIDwithValue.get(3).get(1), 0);
+    assertEquals(1.0, vertexIDwithValue.get(3).get(2), 0);
   }
 
   private GiraphConfiguration getConfiguration() {

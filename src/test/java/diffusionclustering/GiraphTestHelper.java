@@ -15,4 +15,14 @@ public abstract class GiraphTestHelper {
             "1"
     };
   }
+
+  public static String[] getDirected4NodeGraph() {
+      return new String[] {
+            "0 1 2",
+            "1",
+            "2 1",
+            "3 0"
+      };
+  }
+
 }
