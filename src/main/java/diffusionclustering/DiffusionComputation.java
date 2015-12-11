@@ -18,7 +18,12 @@ import java.util.List;
 /**
  * @author Niklas Teichmann (teichmann@informatik.uni-leipzig.de)
  * @author Stefan Faulhaber (faulhaber@informatik.uni-leipzig.de)
- * @author Kevin Gomez (gomez@studserv.uni-leipzig.de)
+ * @author Kevin Gomez      (gomez@studserv.uni-leipzig.de)
+ *
+ * Todo: Modularity for clustering
+ * Todo: Didic vs LabelPropagation
+ * Todo: Edgeflowscale with minor changings
+ * Todo: Edgecut and visualization
  */
 public class DiffusionComputation extends
   BasicComputation<LongWritable, DiffusionVertexValue, NullWritable,
