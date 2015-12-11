@@ -89,7 +89,7 @@ public class DiffusionComputation extends
   }
 
   /**
-   * Setting start cluster
+   * Setting start cluster (hashing)
    *
    * @param vertex current Vertex
    */

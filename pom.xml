@@ -24,10 +24,25 @@
         <developer>
             <id>kgomez</id>
             <name>Kevin Gomez</name>
-            <email>k.gomez@freenet.de</email>
+            <email>gomez@studserv.uni-leipzig.de</email>
             <timezone>+1</timezone>
             <organization>University of Leipzig</organization>
             <organizationUrl>http://dbs.uni-leipzig.de/en</organizationUrl>
+        </developer>
+        <developer>
+            <id>nteichmann</id>
+            <name>Niklas Teichmann</name>
+            <email>teichmann@studserv.uni-leipzig.de</email>
+            <timezone>+1</timezone>
+            <organization>University of Leipzig</organization>
+            <organizationUrl>http://dbs.uni-leipzig.de/en</organizationUrl>
+        </developer>
+        <developer>
+            <id>sfaulhaber</id>
+            <name>Stefan Faulhaber</name>
+            <email>faulhaber@studserv.uni-leipzig.de</email>
+            <timezone>+1</timezone>
+            <organization>University of Leipzig</organization>
         </developer>
     </developers>
 
