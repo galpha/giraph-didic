@@ -30,6 +30,36 @@ public class DiffusionComputationTest {
     String[] graph = GiraphTestHelper.getDirectedGraphFrom0To1();
     Map<Integer, List<Double>> results = computeResults(graph);
     validateResultsFrom0To1(results);
+    for(int key : results.keySet()){
+      System.out.println(key);
+      System.out.println(results.get(key));
+    }
+  }
+
+  @Test
+  public void testAlternative() throws Exception {
+    String[] graph = GiraphTestHelper.getClusterExample();
+    Map<Integer, List<Double>> results = computeAlternativeResults(graph);
+    for(int key : results.keySet()){
+      System.out.println(key);
+      System.out.println(results.get(key));
+    }
+  }
+
+  @Test
+  public void testExtremeGraph() throws Exception {
+    String[] graph = GiraphTestHelper.getExtremeExample();
+    Map<Integer, List<Double>> results = computeResults(graph);
+  }
+
+  @Test
+  public void testClusterGraph() throws Exception {
+    String[] graph = GiraphTestHelper.getClusterExample();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    for(int key : results.keySet()){
+      System.out.println(key);
+      System.out.println(results.get(key));
+    }
   }
 
   private void validateResultsFrom1To0(
@@ -67,6 +97,19 @@ public class DiffusionComputationTest {
   private Map<Integer, List<Double>> computeResults(String[] graph) throws
     Exception {
     GiraphConfiguration conf = getConfiguration();
+    Iterable<String> results = InternalVertexRunner.run(conf, graph);
+    return parseResults(results);
+  }
+
+  private Map<Integer, List<Double>> computeAlternativeResults(String[] graph)
+    throws
+    Exception {
+    GiraphConfiguration conf = new GiraphConfiguration();
+    conf.setComputationClass(DiffusionComputationAlternative.class);
+    conf.setMasterComputeClass(DiffusionMasterComputation.class);
+    conf.setVertexInputFormatClass(DiffusionTextVertexInputFormat.class);
+    conf.setVertexOutputFormatClass(DiffusionTextVertexOutputFormat.class);
+    conf.setBoolean(DiffusionTextVertexOutputFormat.TEST_OUTPUT, true);
     Iterable<String> results = InternalVertexRunner.run(conf, graph);
     return parseResults(results);
   }
