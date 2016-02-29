@@ -19,31 +19,32 @@ public class DiffusionComputationTest {
   private static final Pattern LINE_TOKEN_SEPARATOR = Pattern.compile(" ");
 
   @Test
-  public void testDirectedGraphFrom1To0() throws Exception {
-    String[] graph = GiraphTestHelper.getDirectedGraphFrom1To0();
+  public void testOriginal() throws Exception {
+    String[] graph = GiraphTestHelper.getClusterExample();
     Map<Integer, List<Double>> results = computeResults(graph);
-    validateResultsFrom1To0(results);
-  }
-
-  @Test
-  public void testDirectedGraphFrom0To1() throws Exception {
-    String[] graph = GiraphTestHelper.getDirectedGraphFrom0To1();
-    Map<Integer, List<Double>> results = computeResults(graph);
-    validateResultsFrom0To1(results);
-    for(int key : results.keySet()){
-      System.out.println(key);
-      System.out.println(results.get(key));
-    }
+    printResults(results);
   }
 
   @Test
   public void testAlternative() throws Exception {
     String[] graph = GiraphTestHelper.getClusterExample();
     Map<Integer, List<Double>> results = computeAlternativeResults(graph);
-    for(int key : results.keySet()){
-      System.out.println(key);
-      System.out.println(results.get(key));
-    }
+    printResults(results);
+  }
+
+  @Test
+  public void testDirectedGraphFrom1To0() throws Exception {
+    String[] graph = GiraphTestHelper.getDirectedGraphFrom1To0();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    printResults(results);
+  }
+
+  @Test
+  public void testDirectedGraphFrom0To1() throws Exception {
+    String[] graph = GiraphTestHelper.getDirectedGraphFrom0To1();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    printResults(results);
+    validateResultsFrom0To1(results);
   }
 
   @Test
@@ -77,11 +78,11 @@ public class DiffusionComputationTest {
     Map<Integer, List<Double>> vertexIDwithValue) {
     assertEquals(2, vertexIDwithValue.size());
     assertEquals(0.0, vertexIDwithValue.get(0).get(0), 0);
-    assertEquals(1.0, vertexIDwithValue.get(0).get(1), 0);
+    assertEquals(0.5, vertexIDwithValue.get(0).get(1), 0);
     assertEquals(0.0, vertexIDwithValue.get(0).get(2), 0);
     assertEquals(1.0, vertexIDwithValue.get(1).get(0), 0);
     assertEquals(0.55, vertexIDwithValue.get(1).get(1), 0);
-    assertEquals(1.45, vertexIDwithValue.get(1).get(2), 0);
+    assertEquals(2, vertexIDwithValue.get(1).get(2), 0);
   }
 
   private GiraphConfiguration getConfiguration() {
@@ -99,6 +100,13 @@ public class DiffusionComputationTest {
     GiraphConfiguration conf = getConfiguration();
     Iterable<String> results = InternalVertexRunner.run(conf, graph);
     return parseResults(results);
+  }
+
+  private void printResults(Map<Integer, List<Double>> results){
+    for(int key : results.keySet()){
+      System.out.println(key);
+      System.out.println(results.get(key));
+    }
   }
 
   private Map<Integer, List<Double>> computeAlternativeResults(String[] graph)

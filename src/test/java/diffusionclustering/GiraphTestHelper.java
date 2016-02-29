@@ -9,6 +9,15 @@ public abstract class GiraphTestHelper {
     };
   }
 
+  public static String[] getAlternativeExample() {
+    return new String[] {
+      "0 3",
+      "1 3",
+      "2 3",
+      "3 0 1 2"
+    };
+  }
+
   public static String[] getDirectedGraphFrom0To1() {
     return new String[] {
       "0 1",

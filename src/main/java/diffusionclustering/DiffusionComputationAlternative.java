@@ -7,6 +7,7 @@ import org.apache.giraph.graph.GraphTaskManager;
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.worker.WorkerContext;
 import org.apache.giraph.worker.WorkerGlobalCommUsage;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -60,7 +61,7 @@ public class DiffusionComputationAlternative extends
   /**
    * Default number of iterations
    */
-  public static final int DEFAULT_NUMBER_OF_ITERATIONS = 50;
+  public static final int DEFAULT_NUMBER_OF_ITERATIONS = 90;
   /**
    * Total number of clusters
    */
@@ -159,8 +160,8 @@ public class DiffusionComputationAlternative extends
       for (List<Double> primaryLoad : primaryLoads) {
         double messageLoad = primaryLoad.get(i);
         vertexLoad += messageLoad;
-        vertexLoad += vertex.getValue().getSecondaryLoad().get(i);
       }
+      vertexLoad += vertex.getValue().getSecondaryLoad().get(i);
       vertex.getValue().getPrimaryLoad().set(i, vertexLoad);
     }
   }
@@ -194,8 +195,8 @@ public class DiffusionComputationAlternative extends
         vertexModifier = secondaryLoadFactor;
       }
       if(vertex.getNumEdges()>0) {
-        Double outMessageSum = secLoad * edgeFlowScale;
-        secondary.add(outMessageSum / (vertexModifier * vertex.getNumEdges()));
+        Double outMessageSum = (secLoad * edgeFlowScale) / vertexModifier;
+        secondary.add(outMessageSum / vertex.getNumEdges());
         vertex.getValue().getSecondaryLoad().set(i, secLoad-outMessageSum);
       }
     }
@@ -227,33 +228,30 @@ public class DiffusionComputationAlternative extends
       setStartCluster(vertex);
       setStartLoad(vertex);
     } else {
-      List<Integer> neighborClusters = new ArrayList<>();
       List<List<Double>> primaryLoadMessages = new ArrayList<>();
       List<List<Double>> secondaryLoadMessages = new ArrayList<>();
       for (DiffusionVertexValue neighborValue : messages) {
-        neighborClusters.add(neighborValue.getCurrentCluster().get());
         primaryLoadMessages.add(neighborValue.getPrimaryLoad());
         secondaryLoadMessages.add(neighborValue.getSecondaryLoad());
       }
       calculateNewSecondaryLoad(vertex, secondaryLoadMessages);
       calculateNewPrimaryLoad(vertex, primaryLoadMessages);
       if (getSuperstep() % 10 == 0) {
-        int previousCluster = vertex.getValue().getCurrentCluster().get();
         determineNewCluster(vertex);
-        if(previousCluster == vertex.getValue().getCurrentCluster().get()){
-          vertex.voteToHalt();
-          return;
-        }
       }
     }
-    DiffusionVertexValue message = new DiffusionVertexValue();
-    message.setCurrentCluster(vertex.getValue().getCurrentCluster());
-    message.setSecondaryLoad(computeSecondaryLoadMessage(vertex));
-    message.setPrimaryLoad(computePrimaryLoadMessage(vertex));
-    sendMessageToAllEdges(vertex, message);
-    System.out.println(vertex.getValue().getCurrentCluster());
+    System.out.println(vertex.getId());
     System.out.println(vertex.getValue().getPrimaryLoad() + " <<<<");
     System.out.println(vertex.getValue().getSecondaryLoad() + " <<<<");
+    Iterable<Double> primMessage = computePrimaryLoadMessage(vertex);
+    Iterable<Double> secMessage = computeSecondaryLoadMessage(vertex);
+    System.out.println(primMessage + " <<<<");
+    System.out.println(secMessage + " <<<<");
+    DiffusionVertexValue message = new DiffusionVertexValue();
+    message.setCurrentCluster(vertex.getValue().getCurrentCluster());
+    message.setSecondaryLoad(secMessage);
+    message.setPrimaryLoad(primMessage);
+    sendMessageToAllEdges(vertex, message);
     vertex.voteToHalt();
   }
 }
