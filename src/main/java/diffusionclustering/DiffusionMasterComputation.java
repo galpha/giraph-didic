@@ -18,7 +18,7 @@ public class DiffusionMasterComputation extends DefaultMasterCompute {
   @Override
   public void compute() {
     int iterations = getConf().getInt(DiffusionComputation.NUMBER_OF_ITERATIONS,
-      DiffusionComputationAlternative.DEFAULT_NUMBER_OF_ITERATIONS);
+      DiffusionComputation.DEFAULT_NUMBER_OF_ITERATIONS);
     if (getSuperstep() == iterations) {
       haltComputation();
     }

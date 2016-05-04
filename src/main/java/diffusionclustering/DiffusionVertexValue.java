@@ -14,11 +14,13 @@ public class DiffusionVertexValue implements Writable {
   private List<Double> primaryLoad;
   private List<Double> secondaryLoad;
   private int currentCluster;
+  private int degree;
 
   public DiffusionVertexValue() {
     primaryLoad = new ArrayList<>();
     secondaryLoad = new ArrayList<>();
     currentCluster = Integer.MAX_VALUE;
+    degree = -1;
   }
 
   public void setPrimaryLoad(Iterable<Double> primaryLoad) {
@@ -45,6 +47,14 @@ public class DiffusionVertexValue implements Writable {
     return new IntWritable(this.currentCluster);
   }
 
+  public void setDegree(IntWritable degree) {
+    this.degree = degree.get();
+  }
+
+  public IntWritable getDegree() {
+    return new IntWritable(this.degree);
+  }
+
   public void initList(int size) {
     this.primaryLoad = Lists.newArrayListWithCapacity(size);
     this.secondaryLoad = Lists.newArrayListWithCapacity(size);
@@ -53,6 +63,7 @@ public class DiffusionVertexValue implements Writable {
   @Override
   public void write(DataOutput dataOutput) throws IOException {
     dataOutput.writeInt(this.currentCluster);
+    dataOutput.writeInt(this.degree);
     if (primaryLoad == null || primaryLoad.isEmpty()) {
       dataOutput.writeInt(0);
     } else {
@@ -69,6 +80,7 @@ public class DiffusionVertexValue implements Writable {
   @Override
   public void readFields(DataInput dataInput) throws IOException {
     this.currentCluster = dataInput.readInt();
+    this.degree = dataInput.readInt();
     final int loadSize = dataInput.readInt();
     if (loadSize > 0) {
       initList(loadSize);

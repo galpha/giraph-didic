@@ -40,6 +40,13 @@ public class DiffusionComputationTest {
   }
 
   @Test
+  public void testUndirectedGraph() throws Exception {
+    String[] graph = GiraphTestHelper.getUndirectedGraph();
+    Map<Integer, List<Double>> results = computeResults(graph);
+    printResults(results);
+  }
+
+  @Test
   public void testDirectedGraphFrom0To1() throws Exception {
     String[] graph = GiraphTestHelper.getDirectedGraphFrom0To1();
     Map<Integer, List<Double>> results = computeResults(graph);

@@ -53,7 +53,7 @@ public class DiffusionComputationAlternative extends
   /**
    * Default edge flow scale
    */
-  public static final double DEFAULT_EDGE_FLOW_SCALE = 0.5;
+  public static final double DEFAULT_EDGE_FLOW_SCALE = 1.0;
   /**
    * Default number of clusters
    */
@@ -61,7 +61,7 @@ public class DiffusionComputationAlternative extends
   /**
    * Default number of iterations
    */
-  public static final int DEFAULT_NUMBER_OF_ITERATIONS = 90;
+  public static final int DEFAULT_NUMBER_OF_ITERATIONS = 50;
   /**
    * Total number of clusters
    */
@@ -240,6 +240,7 @@ public class DiffusionComputationAlternative extends
         determineNewCluster(vertex);
       }
     }
+    System.out.println(getSuperstep() + " step");
     System.out.println(vertex.getId());
     System.out.println(vertex.getValue().getPrimaryLoad() + " <<<<");
     System.out.println(vertex.getValue().getSecondaryLoad() + " <<<<");
