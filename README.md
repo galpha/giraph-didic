@@ -26,13 +26,16 @@ Für die Verwendung benötigt man Maven 2 (oder neuere Version).
 
 * Auf laufenden Hadoop-Cluster ausführen
 
-    > $HADOOP_PREFIX/bin/hadoop jar giraph_didic-1.0-SNAPSHOT-jar-with-dependencies.jar org.apache.giraph.GiraphRunner diffusionclustering.DiffusionComputation -mc diffusionclustering.DiffusionMasterComputation -vif diffusionclustering.DiffusionTextVertexInputFormat -vip /user/input/as-skitter.txt.out -vof diffusionclustering.DiffusionTextVertexOutputFormat -op /user/output/gomez -ca diffusion.cluster.num=4 -w 32
+    > $HADOOP_PREFIX/bin/hadoop jar giraph_didic-1.0-SNAPSHOT-jar-with-dependencies.jar org.apache.giraph.GiraphRunner diffusionclustering.DiffusionComputation -mc diffusionclustering.DiffusionMasterComputation -vif diffusionclustering.DiffusionTextVertexInputFormat -vip /user/input/as-skitter.txt.out -vof diffusionclustering.DiffusionTextVertexOutputFormat -op /user/output -ca diffusion.cluster.num=4 -w 32
 
 #### Beispiel (Ergebnisse)
 
 Am Beispiel des Facebook-Datensatz (von [SnapStanford](http://snap.stanford.edu/data/index.html)) wurderder Algorithmus ausgeführt um 10 Cluster zu identifizieren.
 
-![Facebook 10 Cluster](https://img1.picload.org/image/rgoadrll/graph.png)
+<p align="center">
+  <img src="https://img1.picload.org/image/rgoadrll/graph.png" alt="Facebook 10 Cluster"/>
+</p>
+
 
 
 
