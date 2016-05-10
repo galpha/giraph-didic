@@ -15,13 +15,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * Distributed Diffusive Clustering mit Apache Giraph
+ *
  * @author Niklas Teichmann (teichmann@informatik.uni-leipzig.de)
  * @author Stefan Faulhaber (faulhaber@informatik.uni-leipzig.de)
  * @author Kevin Gomez      (gomez@studserv.uni-leipzig.de)
- *
- * Todo: Modularity for clustering
- * Todo: Didic vs LabelPropagation
- * Todo: Edgecut and visualization
  */
 public class DiffusionComputation extends
   BasicComputation<LongWritable, DiffusionVertexValue, NullWritable,
@@ -156,9 +154,6 @@ public class DiffusionComputation extends
       for (DiffusionVertexValue message : messages) {
         newLoad += (message.getPrimaryLoad().get(i) - vertexLoad) *
         getAlphaE(vertex, message);
-        System.out.println(newLoad + " = (" + message.getPrimaryLoad().get(i)
-          + " - " + vertexLoad + ") * " + getAlphaE(vertex, message));
-        System.out.println("BLABLABLA");
       }
       vertexLoad += newLoad;
       vertexLoad += vertex.getValue().getSecondaryLoad().get(i);
@@ -169,9 +164,6 @@ public class DiffusionComputation extends
   private double getAlphaE(
     Vertex<LongWritable, DiffusionVertexValue, NullWritable> vertex,
     DiffusionVertexValue message) {
-    System.out.println(">>>>>>>>" + 1.0 / Math.max(vertex.getValue().getDegree
-      ().get(),
-      message.getDegree().get()));
     return 1.0 / Math.max(vertex.getValue().getDegree().get(),
                         message.getDegree().get());
   }
